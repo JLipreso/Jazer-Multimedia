@@ -1,0 +1,8 @@
+Installation:
+
+composer require jazer/multimedia:dev-main
+php artisan vendor:publish --tag=multimediaconfig-config
+
+multimedia/
+
+
