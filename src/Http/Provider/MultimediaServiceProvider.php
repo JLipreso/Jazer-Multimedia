@@ -9,7 +9,7 @@ class MultimediaServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../../config/database.php', 'people'  
+            __DIR__ . '/../../../config/database.php', 'multimedia'  
         );
     }
 
