@@ -16,8 +16,8 @@ class MultimediaServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../../../config/config.php' => config_path('multimediaconfig.php')
-        ], 'multimediaconfig-config');
+            __DIR__ . '/../../../config/config.php' => config_path('jazermultimediaconfig.php')
+        ], 'jazermultimediaconfig-config');
         
         $this->loadRoutesFrom( __DIR__ . '/../../../routes/api.php');
 
