@@ -18,7 +18,7 @@ class Photo extends Controller
         $reference_id  	= \App\Http\Controllers\utility\ReferenceID::create("IMG");
         $ftpcon 		= ftp_connect(config('multimediaconfig.ftp_ip')) or die('Error connecting to ftp server...');
         $ftplogin 		= ftp_login($ftpcon, config('multimediaconfig.ftp_username'), config('multimediaconfig.ftp_password'));
-        $filepath 	    = config('multimediaconfig.ftp_directory') . '/' . $reference_id . '.' .$ext;
+        $filepath 	    = config('multimediaconfig.ftp_directory') . '/' . date('Y') . '/'. date('m') . date('/') . $reference_id . '.' .$ext;
 
         if (ftp_put($ftpcon, "public_html/" . $filepath, $_FILES['image']['tmp_name'], FTP_BINARY)) {
 

@@ -16,11 +16,11 @@ class MultimediaServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../../../config/config.php' => config_path('jazermultimediaconfig.php')
-        ], 'jazermultimediaconfig-config');
+            __DIR__ . '/../../../config/config.php' => config_path('jtmultimediaconfig.php')
+        ], 'jtmultimediaconfig-config');
         
         $this->loadRoutesFrom( __DIR__ . '/../../../routes/api.php');
 
-        config(['database.connections.conn_multimedia' => config('multimedia.database_connection')]);
+        config(['database.connections.conn_multimedia' => config('jtmultimediaconfig.database_connection')]);
     }
 }

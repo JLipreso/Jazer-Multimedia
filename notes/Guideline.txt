@@ -3,6 +3,6 @@ Installation:
 composer require jazer/multimedia:dev-main
 php artisan vendor:publish --tag=jazermultimediaconfig-config
 
-multimedia/
+multimedia/photo/upload?image=BLOB
 
 
