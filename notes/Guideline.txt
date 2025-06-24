@@ -1,7 +1,8 @@
 Installation:
 
 composer require jazer/multimedia:dev-main
-php artisan vendor:publish --tag=jazermultimediaconfig-config
+composer update jazer/multimedia
+php artisan vendor:publish --tag=jtmultimediaconfig-config
 
 multimedia/photo/upload?image=BLOB
 

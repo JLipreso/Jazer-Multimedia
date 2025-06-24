@@ -15,7 +15,7 @@ Route::group(['prefix' => 'api'], function () {
             Route::get('fetchsingle', function () {});
         });
         Route::group(['prefix' => 'photo'], function () {
-            Route::get('upload', [Jazer\Multimedia\Http\Controllers\Upload\Photo::class, 'upload']);
+            Route::post('upload', [Jazer\Multimedia\Http\Controllers\Upload\Photo::class, 'upload']);
             Route::get('delete', function () {});
             Route::get('rename', function () {});
             Route::get('fetchpaginate', function () {});
