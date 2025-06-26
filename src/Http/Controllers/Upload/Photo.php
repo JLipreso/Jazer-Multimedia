@@ -10,30 +10,58 @@ class Photo extends Controller
 {
     public static function upload(Request $request) {
 
-        $ext            = $request['image']->extension();
-        $path           = $request['image']->path();
-        $file           = $request['image']->getRealPath();
-        $size           = $request['image']->getSize();
-
-        $reference_id   = \Jazer\Multimedia\Http\Controllers\Utility\ReferenceID::create('IMG');
-        $ftpcon 		= ftp_connect(config('jtmultimediaconfig.ftp_ip')) or die('Error connecting to ftp server...');
-        $ftplogin 		= ftp_login($ftpcon, config('jtmultimediaconfig.ftp_username'), config('jtmultimediaconfig.ftp_password'));
-        $filepath 	    = config('jtmultimediaconfig.ftp_directory') . '/' . date('Y') . '/'. date('m') . date('/') . $reference_id . '.' .$ext;
-
-        if (ftp_put($ftpcon, "public_html/" . $filepath, $_FILES['image']['tmp_name'], FTP_BINARY)) {
-
+        if (!$request->hasFile('image') || !$request->file('image')->isValid()) {
             return [
-                "success"       => true,
-                "reference_id"  => $reference_id,
-                "message"       => "Upload successfully",
-                "path"          => config("multimediaconfig.ftp_host") . $filepath
+                'success' => false,
+                'message' => 'Invalid image file'
             ];
         }
-        else {
+
+        $image = $request->file('image');
+
+        $ext           = $ext = $image->guessExtension() ?: 'jpg'; 
+        $localPath     = $image->getRealPath();
+        $reference_id  = \Jazer\Multimedia\Http\Controllers\Utility\ReferenceID::create('IMG');
+        $dateFolder    = date('Y-m-d');
+        $filename      = $reference_id . '.' . $ext;
+        $ftpSubDir     = config('jtmultimediaconfig.ftp_directory') . "/" . $dateFolder;
+
+        $ftpcon         = ftp_connect(config('jtmultimediaconfig.ftp_ip'));
+        if (!$ftpcon) {
             return [
-                "success"       => false,
-                "reference_id"  => $reference_id,
-                "message"       => "Fail to upload"
+                'success' => false,
+                'message' => 'Could not connect to FTP server'
+            ];
+        }
+
+        $ftplogin = ftp_login($ftpcon, config('jtmultimediaconfig.ftp_username'), config('jtmultimediaconfig.ftp_password'));
+        if (!$ftplogin) {
+            ftp_close($ftpcon);
+            return [
+                'success' => false,
+                'message' => 'FTP login failed'
+            ];
+        }
+
+        ftp_pasv($ftpcon, true);
+
+        $remotePath = $ftpSubDir . '/' . $filename;
+        $upload     = ftp_put($ftpcon, "public_html/" . $remotePath, $localPath, FTP_BINARY);
+
+        ftp_close($ftpcon);
+
+        if ($upload) {
+            return [
+                'success'      => true,
+                'reference_id' => $reference_id,
+                'filename'     => $filename,
+                'remotePath'   => $remotePath
+            ];
+        } else {
+            return [
+                'success'      => false,
+                'reference_id' => $reference_id,
+                'message'      => 'FTP upload failed'
             ];
         }
     }
