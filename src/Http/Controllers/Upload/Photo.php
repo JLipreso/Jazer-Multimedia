@@ -19,12 +19,14 @@ class Photo extends Controller
 
         $image = $request->file('image');
 
-        $ext           = $ext = $image->guessExtension() ?: 'jpg'; 
+        $ext           = $image->guessExtension() ?: 'jpg'; 
+        $sizeInBytes   = $image->getSize();
         $localPath     = $image->getRealPath();
         $reference_id  = \Jazer\Multimedia\Http\Controllers\Utility\ReferenceID::create('IMG');
         $dateFolder    = date('Y-m-d');
         $filename      = $reference_id . '.' . $ext;
         $ftpSubDir     = config('jtmultimediaconfig.ftp_directory') . "/" . $dateFolder;
+        $ftpRoot       = "public_html/";
 
         $ftpcon         = ftp_connect(config('jtmultimediaconfig.ftp_ip'));
         if (!$ftpcon) {
@@ -45,12 +47,35 @@ class Photo extends Controller
 
         ftp_pasv($ftpcon, true);
 
+        /** Create FPT Folder if not exist */
+        $verify_folder = \Jazer\Multimedia\Http\Controllers\Utility\CreateFolderIfNotExist::create($ftpcon, $ftpRoot, $dateFolder);
+        if(!$verify_folder) {
+            return [
+                'success' => true,
+                'message' => 'Fail to created FTP folder'
+            ];
+        }
+
         $remotePath = $ftpSubDir . '/' . $filename;
-        $upload     = ftp_put($ftpcon, "public_html/" . $remotePath, $localPath, FTP_BINARY);
+        $upload     = ftp_put($ftpcon, $ftpRoot . $remotePath, $localPath, FTP_BINARY);
 
         ftp_close($ftpcon);
 
         if ($upload) {
+            $save_db = DB::connection("conn_multimedia")->table("multimedia")->insert([
+                "reference_id"      => $reference_id,
+                "file_path"         => $remotePath,
+                "file_extension"    => $ext,
+                "folder"            => $dateFolder,
+                "file_name"         => $filename,
+                "file_bytes_size"   => $sizeInBytes,
+                "caption"           => $request['caption'] ?? null,
+                "created_by"        => $request['created_by'] ?? null,
+                "created_at"        => date('Y-m-d'),
+                "public"            => $request['public'] ?? '0',
+                "shareable"         => $request['shareable'] ?? '0'
+            ]);
+
             return [
                 'success'      => true,
                 'reference_id' => $reference_id,
