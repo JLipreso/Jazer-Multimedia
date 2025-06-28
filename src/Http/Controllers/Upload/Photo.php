@@ -47,7 +47,6 @@ class Photo extends Controller
 
         ftp_pasv($ftpcon, true);
 
-        /** Create FPT Folder if not exist */
         $verify_folder = \Jazer\Multimedia\Http\Controllers\Utility\CreateFolderIfNotExist::create($ftpcon, $ftpRoot, $dateFolder);
         if(!$verify_folder) {
             return [
@@ -63,6 +62,7 @@ class Photo extends Controller
 
         if ($upload) {
             $save_db = DB::connection("conn_multimedia")->table("multimedia")->insert([
+                "project_refid"     => config('jtmultimediaconfig.project_refid'),
                 "reference_id"      => $reference_id,
                 "file_path"         => $remotePath,
                 "file_extension"    => $ext,
@@ -80,9 +80,11 @@ class Photo extends Controller
                 'success'      => true,
                 'reference_id' => $reference_id,
                 'filename'     => $filename,
-                'remotePath'   => $remotePath
+                'remotePath'   => $remotePath,
+                'ftp_host'     => config('jtmultimediaconfig.ftp_host')
             ];
-        } else {
+        }
+        else {
             return [
                 'success'      => false,
                 'reference_id' => $reference_id,

@@ -11,25 +11,48 @@ class Paginate extends Controller
     public static function paginate(Request $request) {
 
         if((isset($request['where'])) && ($request['where'] !== null )) {
-            return DB::connection("conn_users")
-            ->table("people")
-            ->select("project_refid", "people_group_refid", "people_refid", "firstname", "lastname", "email", "blocked", "active")
+            $source = DB::connection("conn_multimedia")
+            ->table("multimedia")
             ->where([
-                "project_refid"     => config('usersconfig.project_refid')
+                "project_refid"     => config('jtmultimediaconfig.project_refid')
             ])
             ->where(json_decode($request['where']))
-            ->orderBy("lastname", "ASC")
-            ->paginate(config('usersconfig.fetch_paginate_max'));
+            ->orderBy("dataid", "desc")
+            ->paginate(config('jtmultimediaconfig.fetch_paginate_max'))
+            ->toArray();
         }
         else {
-            return DB::connection("conn_users")
-            ->table("people")
-            ->select("project_refid", "people_group_refid", "people_refid", "firstname", "lastname", "email", "blocked", "active")
+            $source = DB::connection("conn_multimedia")
+            ->table("multimedia")
             ->where([
-                "project_refid"     => config('usersconfig.project_refid')
+                "project_refid"     => config('jtmultimediaconfig.project_refid')
             ])
-            ->orderBy("lastname", "ASC")
-            ->paginate(config('usersconfig.fetch_paginate_max'));
+            ->orderBy("dataid", "desc")
+            ->paginate(config('jtmultimediaconfig.fetch_paginate_max'))
+            ->toArray();
         }
+
+        $data       = $source['data'];
+        $list       = [];
+
+        foreach($data as  $index => $object) {;
+            $list[]     = [
+                "reference_id"      => $object->reference_id,
+                "file_path"         => $object->file_path,
+                "file_extension"    => $object->file_extension,
+                "folder"            => $object->folder,
+                "file_name"         => $object->file_name,
+                "file_bytes_size"   => $object->file_bytes_size,
+                "file_fullpath"     => config('jtmultimediaconfig.ftp_host') . $object->file_path,
+                "caption"           => $object->caption,
+                "created_by"        => $object->created_by,
+                "created_at"        => $object->created_at,
+                "public"            => \Jazer\Multimedia\Http\Controllers\Utility\NumberToBoolean::convert(intval($object->public)),
+                "shareable"         => \Jazer\Multimedia\Http\Controllers\Utility\NumberToBoolean::convert(intval($object->shareable))
+            ];
+        }
+
+        return \Jazer\Multimedia\Http\Controllers\Utility\Paginator::parse($source, $list);
+
     }
 }

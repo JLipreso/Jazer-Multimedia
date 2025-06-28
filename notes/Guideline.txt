@@ -5,5 +5,4 @@ composer update jazer/multimedia
 php artisan vendor:publish --tag=jtmultimediaconfig-config
 
 multimedia/photo/upload?image=BLOB
-
-
+multimedia/photo/fetchpaginate=where=[]
