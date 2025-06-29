@@ -6,3 +6,5 @@ php artisan vendor:publish --tag=jtmultimediaconfig-config
 
 multimedia/photo/upload?image=BLOB
 multimedia/photo/fetchpaginate=where=[]
+multimedia/photo/delete?reference_id=IMG-06282025073732-0LB
+multimedia/photo/rename?reference_id=IMG-06282025035142-Y1A&file_name=name

@@ -10,14 +10,14 @@ class Paginate extends Controller
 {
     public static function paginate(Request $request) {
 
-        if((isset($request['where'])) && ($request['where'] !== null )) {
+        if((isset($request['keyword'])) && ($request['keyword'] !== null )) {
             $source = DB::connection("conn_multimedia")
             ->table("multimedia")
             ->where([
-                "project_refid"     => config('jtmultimediaconfig.project_refid')
+                ["project_refid", "=", config('jtmultimediaconfig.project_refid')],
+                ["file_name", "like", "%" . $request['keyword'] . "%" ]   
             ])
-            ->where(json_decode($request['where']))
-            ->orderBy("dataid", "desc")
+            ->orderBy("file_name", "asc")
             ->paginate(config('jtmultimediaconfig.fetch_paginate_max'))
             ->toArray();
         }

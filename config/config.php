@@ -19,5 +19,5 @@ return [
     'conn_multimedia_pw'                 => env('CONN_MULTIMEDIA_PW', env('DB_PASSWORD')),
 
     /** Query parameters */
-    'fetch_paginate_max'            => env('FETCH_PAGINATE_MAX', 25),
+    'fetch_paginate_max'            => env('FETCH_PAGINATE_MAX', 12)
 ];
