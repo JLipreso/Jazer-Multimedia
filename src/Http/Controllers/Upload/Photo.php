@@ -27,17 +27,9 @@ class Photo extends Controller
         $filename      = $reference_id . '.' . $ext;
         $ftpSubDir     = config('jtmultimediaconfig.ftp_directory') . "/" . $dateFolder;
         $ftpRoot       = "public_html/";
+        $ftpcon        = \Jazer\Multimedia\Http\Controllers\Utility\FTPConnection::connect();
 
-        $ftpcon         = ftp_connect(config('jtmultimediaconfig.ftp_ip'));
         if (!$ftpcon) {
-            return [
-                'success' => false,
-                'message' => 'Could not connect to FTP server'
-            ];
-        }
-
-        $ftplogin = ftp_login($ftpcon, config('jtmultimediaconfig.ftp_username'), config('jtmultimediaconfig.ftp_password'));
-        if (!$ftplogin) {
             ftp_close($ftpcon);
             return [
                 'success' => false,
